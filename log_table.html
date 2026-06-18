@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Table</title>
+<style>
+    :root {
+        --scale: 1;
+        --font-sm: calc(11pt * var(--scale));
+        --font-md: calc(14pt * var(--scale));
+        --font-lg: calc(16pt * var(--scale));
+        --font-xl: calc(18pt * var(--scale));
+        --font-xxl: calc(28pt * var(--scale));
+        --pad-sm: calc(3px * var(--scale));
+        --pad-md: calc(6px * var(--scale));
+        --pad-lg: calc(20px * var(--scale));
+    }
+
+    @page { size: A4 landscape; margin: 0; }
+    
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body { 
+        font-family: Arial, sans-serif; 
+        padding: var(--pad-lg); 
+        font-size: var(--font-lg); 
+        background-color: #fff; 
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: 2px solid black; 
+        table-layout: fixed;
+    }
+    th, td { 
+        border: 1px solid black; 
+        padding: var(--pad-md); 
+    }
+    
+    .col-sr { width: 5%; }
+    .col-annex { width: 8%; }
+    .col-sac { width: 8%; }
+    .col-period { width: 32%; }
+    .col-km { width: 14%; }
+    .col-toll { width: 14%; }
+    .col-amount { width: 14%; }
+    .col-action { width: 5%; }
+
+    input { 
+        width: 100%; 
+        box-sizing: border-box; 
+        border: none; 
+        text-align: center; 
+        font-family: inherit; 
+        font-size: var(--font-md);
+        background: transparent;
+    }
+    input.km, input.toll, input.amount { 
+        text-align: right; 
+    }
+    input:focus { 
+        outline: 1px solid #999; 
+        background: #f9f9f9; 
+    }
+    
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    
+    .editable {
+        border-bottom: 1px dashed #999;
+        display: inline-block;
+        min-width: 30px;
+        padding: 0 4px;
+        outline: none;
+        cursor: text;
+    }
+    .editable:focus {
+        background: #f9f9f9;
+        border-bottom: 1px solid #333;
+    }
+
+    @media print {
+        body { 
+            padding: 5mm 10mm; /* Minimal safe padding for printer */
+            max-width: 100vw;
+        }
+        .col-period { width: 37%; }
+        .no-print { display: none !important; }
+        .editable { border-bottom: none; }
+        input { background: transparent !important; }
+        input:focus { outline: none !important; }
+    }
+    
+    .remove-btn { 
+        color: red; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border: none; 
+        background: transparent; 
+        font-size: var(--font-lg);
+    }
+    .add-btn { 
+        margin-top: 20px; 
+        padding: 10px 20px; 
+        font-size: var(--font-lg); 
+        cursor: pointer; 
+        border: 1px solid #000;
+        background: #eee;
+    }
+</style>
+</head>
+<body>
+
+<table>
+    <colgroup>
+        <col class="col-sr">
+        <col class="col-annex">
+        <col class="col-sac">
+        <col class="col-period">
+        <col class="col-km">
+        <col class="col-toll">
+        <col class="col-amount">
+        <col class="col-action no-print">
+    </colgroup>
+    <thead>
+        <tr>
+            <th colspan="7" style="text-align: center; color: #004d99; font-size: var(--font-xxl); padding: var(--pad-md);">
+                JAI JULELAL TRANSPORT
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="7" style="text-align: center; padding: var(--pad-sm); font-weight: normal; font-size: var(--font-md);">
+                QUATER NO 22, SHASTRI NAGAR, REFUGEE COLONY,<br>
+                JUNCTION PLOT, RAJKOT - 360001<br>
+                <strong>M.: 98259 97749 / 95103 00372</strong>
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="2" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">Debit Memo</th>
+            <th colspan="3" style="text-align: center; font-size: var(--font-xl);">PARFOMA INVOICE</th>
+            <th colspan="2" style="padding: var(--pad-sm); text-align: right; font-weight: normal; font-size: var(--font-md);">Original</th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="3" style="padding: var(--pad-md); text-align: left; font-size: var(--font-md);">
+                M/S. : <strong>MRF LIMITED</strong>
+            </th>
+            <th colspan="4" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
+                Invoice No. <span style="margin-left:30px;">: <span contenteditable="true" class="editable">4</span></span>
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="3" style="padding: var(--pad-md); text-align: center; font-size: var(--font-lg);">
+                <strong>RAJKOT</strong>
+            </th>
+            <th colspan="4" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
+                Date <span style="margin-left:80px;">: <span contenteditable="true" class="editable">03/06/2026</span></span>
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="3" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+                Place of Supply: 24 - Gujarat
+            </th>
+            <th colspan="4" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+                Annexure Type : <strong>VAN BILL</strong>
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="3" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+                GSTIN NO. : <span contenteditable="true" class="editable">24AAACM4154G1ZT</span>
+            </th>
+            <th colspan="4" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+                Annexure Period : 
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th class="col-sr" style="padding: var(--pad-md); font-size: var(--font-md);">Sr.No.</th>
+            <th class="col-annex" style="padding: var(--pad-md); font-size: var(--font-md);">Annexure No.</th>
+            <th class="col-sac" style="padding: var(--pad-md); font-size: var(--font-md);">SAC Code</th>
+            <th class="col-period" style="padding: var(--pad-md); font-size: var(--font-md);">Annexure Period</th>
+            <th class="col-km" style="padding: var(--pad-md); font-size: var(--font-md);">KM Amount</th>
+            <th class="col-toll" style="padding: var(--pad-md); font-size: var(--font-md);">Toll Amount</th>
+            <th class="col-amount" style="padding: var(--pad-md); font-size: var(--font-md);">Amount</th>
+            <th class="col-action no-print" style="padding: var(--pad-md); font-size: var(--font-md);">Action</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Rows injected by javascript -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" style="font-weight: bold; font-size: var(--font-md);">
+                GSTIN NO. : <span contenteditable="true" class="editable">24AESPB6082M1Z3</span>
+            </td>
+            <td style="font-weight: bold; font-size: var(--font-md); padding: var(--pad-sm) var(--pad-md);">
+                <span style="float: left;">PAN NO. AEX</span>
+                <span style="float: right;">Sub Total</span>
+            </td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumKm"></td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumToll"></td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumAmount">567834.08</td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="7" style="font-weight: bold; vertical-align: top; font-size: var(--font-md);">
+                Bank Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: HDFC BANK<br>
+                Bank A/C NO. &nbsp;&nbsp;&nbsp;&nbsp;: 0378200002743<br>
+                RTGS / NEFT Code : HDFC0000378
+            </td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="4" rowspan="2" style="font-weight: bold; font-size: var(--font-md); vertical-align: top;">
+                <div style="margin-bottom: var(--pad-lg);">Total GST</div>
+                <div>Bill Amount</div>
+            </td>
+            <td colspan="2" style="font-weight: bold; vertical-align: top; font-size: var(--font-md); padding: var(--pad-md);">
+                <div style="display:flex; justify-content:space-between; margin-bottom: var(--pad-sm);"><span>Taxable Amount</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom: var(--pad-sm);"><span>Central Tax</span><span>9.00%</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>State Tax</span><span>9.00%</span></div>
+            </td>
+            <td style="font-weight: bold; text-align: right; vertical-align: top; font-size: var(--font-md); padding: var(--pad-md);">
+                <div id="taxableAmount" style="margin-bottom: var(--pad-sm);"></div>
+                <div id="cgst" style="margin-bottom: var(--pad-sm);"></div>
+                <div id="sgst"></div>
+            </td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; font-size: var(--font-xl); text-align: center; vertical-align: middle;">
+                Grand Total
+            </td>
+            <td style="font-weight: bold; font-size: var(--font-xl); text-align: right; vertical-align: middle;" id="grandTotal">
+            </td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="7" style="padding: var(--pad-md); font-size: var(--font-md);">
+                Note : 
+            </td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size: var(--font-sm); font-weight: bold; vertical-align: top;">
+                Terms & Condition :<br>
+                1. This is GST Taxable Invoice. We are paying GST @12% on Forward Charge Basis on Transportation services provided by us So, No Reverse Charge Tax is Payable by Reccipient<br>
+                2. "Subject to 'Rajkot' Jurisdiction only. E.&.O.E"
+            </td>
+            <td colspan="3" style="text-align: right; vertical-align: bottom; height: calc(80px * var(--scale)); padding-right: 20px; font-size: var(--font-md);">
+                <div style="text-align: center; float: right;">
+                    For, JAI JULELAL TRANSPORT<br><br><br><br>
+                    (Authorised Signature)
+                </div>
+            </td>
+            <td class="no-print"></td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="no-print" style="text-align: center; margin-top: 20px;">
+    <button class="add-btn" onclick="addRow()">+ Add Row</button>
+    <button class="add-btn" onclick="window.print()" style="margin-left:10px;">Print Invoice</button>
+</div>
+
+<script>
+    const initialData = [];
+
+    const tbody = document.getElementById('tableBody');
+
+    function createRow(data) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${data[0]}"></td>
+            <td><input type="text" class="annex" value="${data[1]}" oninput="syncAnnex(this)"></td>
+            <td><input type="text" class="sac" value="${data[2]}" onfocus="storeOldSac(this)" oninput="syncSac(this)"></td>
+            <td><input type="text" value="${data[3]}"></td>
+            <td><input type="number" class="km" value="${data[4]}" oninput="calculate()"></td>
+            <td><input type="number" class="toll" value="${data[5]}" oninput="calculate()"></td>
+            <td><input type="text" class="amount" readonly></td>
+            <td class="no-print" style="text-align:center;"><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+        `;
+        return tr;
+    }
+
+    function storeOldSac(input) {
+        input.dataset.oldVal = input.value;
+    }
+
+    function syncAnnex(input) {
+        let match = input.value.match(/^(.*?)(\d+)$/);
+        let prefix = "";
+        let numStr = input.value;
+        
+        if (match) {
+            prefix = match[1];
+            numStr = match[2];
+        } else if (!/^\d+$/.test(input.value)) {
+            return; // Not a number sequence
+        }
+        
+        let currentNum = parseInt(numStr);
+        if (isNaN(currentNum)) return;
+
+        let paddingLength = numStr.length;
+        let inputs = Array.from(document.querySelectorAll('#tableBody .annex'));
+        let index = inputs.indexOf(input);
+        
+        for (let i = index + 1; i < inputs.length; i++) {
+            currentNum++;
+            let nextNumStr = currentNum.toString();
+            if (nextNumStr.length < paddingLength) {
+                nextNumStr = nextNumStr.padStart(paddingLength, '0');
+            }
+            inputs[i].value = prefix + nextNumStr;
+        }
+    }
+
+    function syncSac(input) {
+        let tr = input.closest('tr');
+        let tbody = document.getElementById('tableBody');
+        
+        // Only trigger mass-sync if editing the very first row
+        if (tr === tbody.firstElementChild) {
+            let newVal = input.value;
+            let oldVal = input.dataset.oldVal;
+            if (oldVal === undefined) oldVal = "";
+
+            let inputs = document.querySelectorAll('#tableBody .sac');
+            inputs.forEach(sac => {
+                if (sac !== input && sac.value === oldVal) {
+                    sac.value = newVal;
+                    sac.dataset.oldVal = newVal;
+                }
+            });
+            input.dataset.oldVal = newVal;
+        } else {
+            // If editing any other specific row, just update its own tracker and don't sync
+            input.dataset.oldVal = input.value;
+        }
+    }
+
+    function renderInitial() {
+        initialData.forEach(data => {
+            tbody.appendChild(createRow(data));
+        });
+        calculate();
+    }
+
+    function addRow() {
+        let nextSr = tbody.children.length + 1;
+        let lastSac = "";
+        let lastAnnex = "";
+        if (tbody.children.length > 0) {
+            lastSac = tbody.lastElementChild.querySelector('.sac').value;
+            let prevAnnexInput = tbody.lastElementChild.querySelector('.annex');
+            
+            // Auto increment last annex value if it exists
+            if (prevAnnexInput && prevAnnexInput.value) {
+                let match = prevAnnexInput.value.match(/^(.*?)(\d+)$/);
+                if (match) {
+                    let num = parseInt(match[2]) + 1;
+                    lastAnnex = match[1] + num.toString().padStart(match[2].length, '0');
+                } else if (/^\d+$/.test(prevAnnexInput.value)) {
+                    let num = parseInt(prevAnnexInput.value) + 1;
+                    lastAnnex = num.toString().padStart(prevAnnexInput.value.length, '0');
+                } else {
+                    lastAnnex = prevAnnexInput.value;
+                }
+            }
+        }
+        tbody.appendChild(createRow([nextSr, lastAnnex, lastSac, "", "", ""]));
+        calculate();
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        calculate();
+    }
+
+    function calculate() {
+        let kmTotal = 0;
+        let tollTotal = 0;
+        let amountTotal = 0;
+
+        document.querySelectorAll('#tableBody tr').forEach(row => {
+            let km = parseFloat(row.querySelector('.km').value) || 0;
+            let toll = parseFloat(row.querySelector('.toll').value) || 0;
+            let amount = km + toll;
+            
+            amount = Math.round(amount * 100) / 100;
+            row.querySelector('.amount').value = amount > 0 ? amount.toFixed(2) : '';
+            
+            kmTotal += km;
+            tollTotal += toll;
+            amountTotal += amount;
+        });
+
+        amountTotal = Math.round(amountTotal * 100) / 100;
+        kmTotal = Math.round(kmTotal * 100) / 100;
+        tollTotal = Math.round(tollTotal * 100) / 100;
+
+        document.getElementById('sumKm').innerText = kmTotal > 0 ? kmTotal.toFixed(2) : '';
+        document.getElementById('sumToll').innerText = tollTotal > 0 ? tollTotal.toFixed(2) : '';
+        document.getElementById('sumAmount').innerText = amountTotal > 0 ? amountTotal.toFixed(2) : '';
+        document.getElementById('taxableAmount').innerText = amountTotal > 0 ? amountTotal.toFixed(2) : '';
+
+        let cgst = amountTotal * 0.09;
+        let sgst = amountTotal * 0.09;
+
+        document.getElementById('cgst').innerText = cgst > 0 ? cgst.toFixed(4) : '';
+        document.getElementById('sgst').innerText = sgst > 0 ? sgst.toFixed(4) : '';
+
+        let grandTotal = amountTotal + cgst + sgst;
+        document.getElementById('grandTotal').innerText = grandTotal > 0 ? grandTotal.toFixed(4) : '';
+    }
+
+    // Dynamic Scaling using CSS Variables: Perfectly scales height without altering 100% width geometry
+    window.addEventListener('beforeprint', () => {
+        const table = document.querySelector('table');
+        const maxPrintHeight = 710; 
+        const currentHeight = table.offsetHeight;
+        
+        if (currentHeight > maxPrintHeight) {
+            let scale = maxPrintHeight / currentHeight;
+            document.documentElement.style.setProperty('--scale', scale);
+        } else {
+            document.documentElement.style.setProperty('--scale', 1);
+        }
+    });
+
+    window.addEventListener('afterprint', () => {
+        document.documentElement.style.setProperty('--scale', 1);
+    });
+
+    // Initialize
+    renderInitial();
+</script>
+</body>
+</html>
