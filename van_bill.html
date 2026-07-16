@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Van Bill</title>
+<style>
+    :root {
+        --scale: 1;
+        --font-sm: calc(10pt * var(--scale));
+        --font-md: calc(12pt * var(--scale));
+        --font-lg: calc(14pt * var(--scale));
+        --font-xl: calc(16pt * var(--scale));
+        --font-xxl: calc(26pt * var(--scale));
+        --pad-sm: calc(4px * var(--scale));
+        --pad-md: calc(8px * var(--scale));
+        --pad-lg: calc(12px * var(--scale));
+    }
+
+    @page { size: A4 landscape; margin: 0; }
+    
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body { 
+        font-family: Arial, sans-serif; 
+        padding: var(--pad-lg); 
+        font-size: var(--font-md); 
+        background-color: #fff; 
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: 2px solid black; 
+        table-layout: fixed;
+    }
+    th, td { 
+        border: 1px solid black; 
+        padding: var(--pad-sm); 
+        text-align: center;
+    }
+    
+    .col-sr { width: 3%; }
+    .col-gf { width: 6%; }
+    .col-date { width: 7%; }
+    .col-route { width: 5%; }
+    .col-town { width: 6%; }
+    .col-veh-type { width: 7%; }
+    .col-veh-no { width: 8%; }
+    .col-wt { width: 4%; }
+    .col-kms { width: 4%; }
+    .col-rate { width: 4%; }
+    .col-km-amt { width: 6%; }
+    .col-toll { width: 5%; }
+    .col-amt { width: 7%; }
+    .col-action { width: 4%; }
+
+    input, select { 
+        width: 100%; 
+        box-sizing: border-box; 
+        border: none; 
+        text-align: center; 
+        font-family: inherit; 
+        font-size: var(--font-sm);
+        background: transparent;
+        padding: 0;
+    }
+    input.num { 
+        text-align: right; 
+    }
+    input:focus, select:focus { 
+        outline: 1px solid #999; 
+        background: #f9f9f9; 
+    }
+    
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    
+    .editable {
+        border-bottom: 1px dashed #999;
+        display: inline-block;
+        min-width: 30px;
+        padding: 0 4px;
+        outline: none;
+        cursor: text;
+    }
+    .editable:focus {
+        background: #f9f9f9;
+        border-bottom: 1px solid #333;
+    }
+
+    @media print {
+        body { 
+            padding: 2mm 2mm; 
+            max-width: 100vw;
+        }
+        table {
+            height: 98vh;
+        }
+        .no-print { display: none !important; }
+        .editable { border-bottom: none; }
+        input, select { background: transparent !important; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        input:focus { outline: none !important; }
+        input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+        input[type="date"]::-webkit-inner-spin-button { display: none !important; }
+        input[type="date"]::-webkit-clear-button { display: none !important; }
+    }
+    
+    .remove-btn { 
+        color: red; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border: none; 
+        background: transparent; 
+        font-size: var(--font-md);
+    }
+    .add-btn { 
+        margin-top: 20px; 
+        padding: 10px 20px; 
+        font-size: var(--font-lg); 
+        cursor: pointer; 
+        border: 1px solid #000;
+        background: #eee;
+    }
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align: center; margin-bottom: 20px;">
+    <a href="index.html" style="font-size: 20px; color: blue; text-decoration: underline; margin-right: 20px;">Go to Main Invoice</a>
+</div>
+
+<datalist id="routeList">
+    <option value="U1">
+    <option value="U2">
+    <option value="U3">
+    <option value="U4">
+    <option value="U5">
+    <option value="U6">
+    <option value="U7">
+    <option value="U8">
+    <option value="U9">
+    <option value="U10">
+    <option value="U11">
+    <option value="U12">
+</datalist>
+
+<datalist id="townList">
+    <option value="JAMNAGAR">
+    <option value="DHROL">
+    <option value="LALPUR">
+    <option value="KALAVAD">
+    <option value="WAKANER">
+    <option value="HALVAD">
+    <option value="THANGADH">
+    <option value="CHOTILA">
+    <option value="TANKARA">
+    <option value="MORBI">
+    <option value="PIPLIYA">
+    <option value="DHORAJI">
+    <option value="UPLETA">
+    <option value="JAMJODHPUR">
+    <option value="BHANVAD">
+    <option value="KUTIYANA">
+    <option value="RANAVAV">
+    <option value="PORBANDAR">
+    <option value="MIYANI">
+    <option value="SIKAPATIYA">
+    <option value="JAMKHAMBHADIYA">
+    <option value="BHATIYA">
+    <option value="DHWARIKA">
+    <option value="MITHAPUR">
+    <option value="GONDAL">
+    <option value="KESOD">
+    <option value="GADU">
+    <option value="VERAVAL">
+    <option value="SUTRAPADA">
+    <option value="MENDERDA">
+    <option value="TALALA">
+    <option value="KODINAR">
+    <option value="DOLASA">
+    <option value="JETPUR">
+    <option value="JUNAGADH">
+    <option value="MANGROL">
+    <option value="MADHAVPUR">
+    <option value="UNA">
+    <option value="RAJKOT">
+</datalist>
+
+<datalist id="vehTypeList">
+    <option value="TATA 407">
+    <option value="TATA 709">
+    <option value="BOLERO">
+    <option value="TATA 407 TURBO">
+    <option value="EICHER">
+</datalist>
+
+<table>
+    <colgroup>
+        <col class="col-sr">
+        <col class="col-gf">
+        <col class="col-date">
+        <col class="col-route">
+        <col class="col-town">
+        <col class="col-town">
+        <col class="col-town">
+        <col class="col-town">
+        <col class="col-town">
+        <col class="col-veh-type">
+        <col class="col-veh-no">
+        <col class="col-wt">
+        <col class="col-kms">
+        <col class="col-rate">
+        <col class="col-km-amt">
+        <col class="col-toll">
+        <col class="col-amt">
+        <col class="col-action no-print">
+    </colgroup>
+    <thead>
+        <tr>
+            <th colspan="17" style="text-align: center; color: #004d99; font-size: var(--font-xxl); padding: var(--pad-sm);">
+                JAI JULELAL TRANSPORT
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="17" style="text-align: center; padding: var(--pad-sm); font-weight: normal; font-size: var(--font-md);">
+                QUATER NO 22, SHASTRI NAGAR, REFUGEE COLONY,<br>
+                JUNCTION PLOT, RAJKOT - 360001<br>
+                <strong>M.: 98259 97749 / 95103 00372</strong>
+            </th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="17" style="text-align: center; font-size: var(--font-lg); padding: var(--pad-sm);">ANNEXURE</th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">M/S.</th>
+            <th colspan="8" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><strong>MRF LIMITED</strong></th>
+            <th colspan="3" style="text-align: right; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure No.</th>
+            <th colspan="4" style="text-align: center; padding: var(--pad-sm); font-size: var(--font-sm);"><span contenteditable="true" class="editable" style="width: 100%;">1</span></th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"></th>
+            <th colspan="8" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">RAJKOT</th>
+            <th colspan="3" style="text-align: right; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure Date</th>
+            <th colspan="4" style="text-align: center; padding: var(--pad-sm); font-size: var(--font-sm);"><span contenteditable="true" class="editable" style="width: 100%;">26/04/2026</span></th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">GSTIN NO.</th>
+            <th colspan="8" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><strong>24AAACM4154G1ZT</strong></th>
+            <th colspan="3" style="text-align: right; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure Type</th>
+            <th colspan="4" style="text-align: center; padding: var(--pad-sm); font-size: var(--font-sm);">VAN BILL</th>
+            <th class="no-print"></th>
+        </tr>
+        <tr>
+            <th class="col-sr">SR</th>
+            <th class="col-gf">G.F.NO</th>
+            <th class="col-date">DATE</th>
+            <th class="col-route">ROUTE NO</th>
+            <th class="col-town" colspan="5">TOWNS COVERED</th>
+            <th class="col-veh-type">TYPE OF VEHICLE</th>
+            <th class="col-veh-no">VEHICLE NO</th>
+            <th class="col-wt">WT.</th>
+            <th class="col-kms">KMS</th>
+            <th class="col-rate">RATE</th>
+            <th class="col-km-amt">KM AMOUNT</th>
+            <th class="col-toll">TOLL</th>
+            <th class="col-amt">AMOUNT</th>
+            <th class="col-action no-print">Action</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Rows injected by javascript -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="14" style="font-weight: bold; text-align: right; font-size: var(--font-md); padding-right: 10px;">
+                Sub Total
+            </td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-md);" id="sumKmAmt"></td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-md);" id="sumToll"></td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-md);" id="sumAmount"></td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="17" style="font-weight: bold; vertical-align: top; font-size: var(--font-sm); text-align: left;">
+                Bank Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: HDFC BANK<br>
+                Bank A/C NO. &nbsp;&nbsp;&nbsp;&nbsp;: 0378200002743<br>
+                RTGS / NEFT Code : HDFC0000378
+            </td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="7" style="font-size: var(--font-sm); font-weight: bold; vertical-align: top; text-align: left;">
+                Terms & Condition :<br>
+                1. This is GST Taxable Invoice. We are paying GST @12% on Forward Charge Basis on Transportation services provided by us So, No Reverse Charge Tax is Payable by Reccipient<br>
+                2. "Subject to 'Rajkot' Jurisdiction only. E.&.O.E"
+            </td>
+            <td colspan="5" style="text-align: center; vertical-align: bottom; height: calc(70px * var(--scale)); font-size: var(--font-md); padding-bottom: 10px;">
+                <strong>Receiver Signature</strong>
+            </td>
+            <td colspan="5" style="text-align: right; vertical-align: bottom; padding-right: 20px; font-size: var(--font-md); padding-bottom: 10px;">
+                <div style="text-align: center; float: right;">
+                    For, JAI JULELAL TRANSPORT<br><br><br><br>
+                    (Authorised Signature)
+                </div>
+            </td>
+            <td class="no-print"></td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="no-print" style="text-align: center; margin-top: 20px;">
+    <button class="add-btn" onclick="addRow()">+ Add Row</button>
+    <button class="add-btn" onclick="copyToExcel()" style="margin-left:10px;">Copy to Excel</button>
+    <button class="add-btn" onclick="window.print()" style="margin-left:10px;">Print Invoice</button>
+</div>
+
+<script>
+    const initialData = [];
+
+    const tbody = document.getElementById('tableBody');
+
+    function createRow(data) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${data[0] || ''}"></td>
+            <td><input type="text" value="${data[1] || ''}"></td>
+            <td><input type="date" value="${data[2] || ''}" style="font-size: 8pt; padding:0;"></td>
+            <td><input type="text" list="routeList" value="${data[3] || ''}"></td>
+            <td><input type="text" list="townList" value="${data[4] || ''}"></td>
+            <td><input type="text" list="townList" value="${data[5] || ''}"></td>
+            <td><input type="text" list="townList" value="${data[6] || ''}"></td>
+            <td><input type="text" list="townList" value="${data[7] || ''}"></td>
+            <td><input type="text" list="townList" value="${data[8] || ''}"></td>
+            <td><input type="text" list="vehTypeList" value="${data[9] || ''}"></td>
+            <td><input type="text" value="${data[10] || ''}"></td>
+            <td><input type="number" class="num" value="${data[11] || ''}"></td>
+            <td><input type="number" class="num kms" value="${data[12] || ''}" oninput="calculate()"></td>
+            <td><input type="number" class="num rate" value="${data[13] || ''}" oninput="calculate()"></td>
+            <td><input type="text" class="num km-amt" readonly></td>
+            <td><input type="number" class="num toll" value="${data[14] || ''}" oninput="calculate()"></td>
+            <td><input type="text" class="num amount" readonly></td>
+            <td class="no-print" style="text-align:center;"><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+        `;
+        return tr;
+    }
+
+    function renderInitial() {
+        if (initialData.length === 0) {
+            addRow(); // add empty row if none
+        } else {
+            initialData.forEach(data => {
+                tbody.appendChild(createRow(data));
+            });
+        }
+        calculate();
+    }
+
+    function addRow() {
+        let nextSr = tbody.children.length + 1;
+        tbody.appendChild(createRow([nextSr]));
+        calculate();
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        calculate();
+    }
+
+    function formatNum(val) {
+        if (!val || val <= 0) return '';
+        return Number(val.toFixed(2)).toString();
+    }
+
+    function calculate() {
+        let kmAmtTotal = 0;
+        let tollTotal = 0;
+        let amountTotal = 0;
+
+        document.querySelectorAll('#tableBody tr').forEach(row => {
+            let kms = parseFloat(row.querySelector('.kms').value) || 0;
+            let rate = parseFloat(row.querySelector('.rate').value) || 0;
+            let toll = parseFloat(row.querySelector('.toll').value) || 0;
+            
+            let kmAmt = kms * rate;
+            kmAmt = Math.round(kmAmt * 100) / 100;
+            
+            let amount = kmAmt + toll;
+            amount = Math.round(amount * 100) / 100;
+
+            row.querySelector('.km-amt').value = formatNum(kmAmt);
+            row.querySelector('.amount').value = formatNum(amount);
+            
+            kmAmtTotal += kmAmt;
+            tollTotal += toll;
+            amountTotal += amount;
+        });
+
+        kmAmtTotal = Math.round(kmAmtTotal * 100) / 100;
+        tollTotal = Math.round(tollTotal * 100) / 100;
+        amountTotal = Math.round(amountTotal * 100) / 100;
+
+        document.getElementById('sumKmAmt').innerText = formatNum(kmAmtTotal);
+        document.getElementById('sumToll').innerText = formatNum(tollTotal);
+        document.getElementById('sumAmount').innerText = formatNum(amountTotal);
+    }
+
+    function copyToExcel() {
+        let table = document.querySelector('table').cloneNode(true);
+        
+        table.querySelectorAll('.no-print').forEach(el => el.remove());
+        
+        let originalInputs = document.querySelector('table').querySelectorAll('input, select');
+        let clonedInputs = table.querySelectorAll('input, select');
+        
+        for (let i = 0; i < originalInputs.length; i++) {
+            let val = originalInputs[i].value;
+            let parent = clonedInputs[i].parentNode;
+            parent.innerText = val; 
+        }
+
+        let originalSpans = document.querySelector('table').querySelectorAll('.editable');
+        let clonedSpans = table.querySelectorAll('.editable');
+        for (let i = 0; i < originalSpans.length; i++) {
+            let val = originalSpans[i].innerText;
+            clonedSpans[i].parentNode.innerText = val;
+        }
+
+        let div = document.createElement('div');
+        div.appendChild(table);
+        
+        table.style.borderCollapse = "collapse";
+        table.querySelectorAll('th, td').forEach(cell => {
+            cell.style.border = "1px solid black";
+        });
+        
+        div.style.position = 'absolute';
+        div.style.left = '-9999px';
+        document.body.appendChild(div);
+        
+        let range = document.createRange();
+        range.selectNodeContents(div);
+        let sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        
+        try {
+            document.execCommand('copy');
+            alert("Table copied! You can now paste it into Excel.");
+        } catch (err) {
+            alert("Failed to copy table.");
+        }
+        
+        sel.removeAllRanges();
+        document.body.removeChild(div);
+    }
+
+    window.addEventListener('beforeprint', () => {
+        const table = document.querySelector('table');
+        const maxPrintHeight = 710; 
+        const currentHeight = table.offsetHeight;
+        
+        if (currentHeight > maxPrintHeight) {
+            let scale = maxPrintHeight / currentHeight;
+            document.documentElement.style.setProperty('--scale', scale);
+        } else {
+            document.documentElement.style.setProperty('--scale', 1);
+        }
+    });
+
+    window.addEventListener('afterprint', () => {
+        document.documentElement.style.setProperty('--scale', 1);
+    });
+
+    renderInitial();
+</script>
+</body>
+</html>
