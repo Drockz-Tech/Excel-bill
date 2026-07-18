@@ -7,7 +7,7 @@
 <style>
     :root {
         --scale: 1;
-        --font-sm: calc(10pt * var(--scale));
+        --font-sm: calc(9pt * var(--scale));
         --font-md: calc(12pt * var(--scale));
         --font-lg: calc(14pt * var(--scale));
         --font-xl: calc(16pt * var(--scale));
@@ -44,20 +44,20 @@
         text-align: center;
     }
     
-    .col-sr { width: 3%; }
-    .col-gf { width: 6%; }
-    .col-date { width: 7%; }
-    .col-route { width: 5%; }
-    .col-town { width: 6%; }
-    .col-veh-type { width: 7%; }
-    .col-veh-no { width: 8%; }
-    .col-wt { width: 4%; }
-    .col-kms { width: 4%; }
-    .col-rate { width: 4%; }
-    .col-km-amt { width: 6%; }
-    .col-toll { width: 5%; }
-    .col-amt { width: 7%; }
-    .col-action { width: 4%; }
+    .col-sr { width: 2.0%; }
+    .col-gf { width: 8.0%; }
+    .col-date { width: 6.0%; }
+    .col-route { width: 4.0%; }
+    .col-town { width: 4.7%; }
+    .col-veh-type { width: 8.0%; }
+    .col-veh-no { width: 8.0%; }
+    .col-wt { width: 6.0%; }
+    .col-kms { width: 5.5%; }
+    .col-rate { width: 5.5%; }
+    .col-km-amt { width: 7.5%; }
+    .col-toll { width: 6.0%; }
+    .col-amt { width: 8.0%; }
+    .col-action { width: 2.0%; }
 
     input, select { 
         width: 100%; 
@@ -102,7 +102,7 @@
             max-width: 100vw;
         }
         table {
-            height: 98vh;
+            height: auto; /* Removed 98vh to prevent overflow onto second page */
         }
         .no-print { display: none !important; }
         .editable { border-bottom: none; }
@@ -203,26 +203,26 @@
 </datalist>
 
 <table>
-    <colgroup>
-        <col class="col-sr">
-        <col class="col-gf">
-        <col class="col-date">
-        <col class="col-route">
-        <col class="col-town">
-        <col class="col-town">
-        <col class="col-town">
-        <col class="col-town">
-        <col class="col-town">
-        <col class="col-veh-type">
-        <col class="col-veh-no">
-        <col class="col-wt">
-        <col class="col-kms">
-        <col class="col-rate">
-        <col class="col-km-amt">
-        <col class="col-toll">
-        <col class="col-amt">
-        <col class="col-action no-print">
-    </colgroup>
+        <colgroup>
+            <col class="col-sr" style="width: 2.0%;">
+            <col class="col-gf" style="width: 8.0%;">
+            <col class="col-date" style="width: 6.0%;">
+            <col class="col-route" style="width: 4.0%;">
+            <col class="col-town" style="width: 4.7%;">
+            <col class="col-town" style="width: 4.7%;">
+            <col class="col-town" style="width: 4.7%;">
+            <col class="col-town" style="width: 4.7%;">
+            <col class="col-town" style="width: 4.7%;">
+            <col class="col-veh-type" style="width: 8.0%;">
+            <col class="col-veh-no" style="width: 8.0%;">
+            <col class="col-wt" style="width: 6.0%;">
+            <col class="col-kms" style="width: 5.5%;">
+            <col class="col-rate" style="width: 5.5%;">
+            <col class="col-km-amt" style="width: 7.5%;">
+            <col class="col-toll" style="width: 6.0%;">
+            <col class="col-amt" style="width: 8.0%;">
+            <col class="col-action" style="width: 2.0%;">
+        </colgroup>
     <thead>
         <tr>
             <th colspan="17" style="text-align: center; color: #004d99; font-size: var(--font-xxl); padding: var(--pad-sm);">
@@ -359,11 +359,16 @@
 
     function renderInitial() {
         if (initialData.length === 0) {
-            addRow(); // add empty row if none
+            for(let i=0; i<10; i++) {
+                addRow(); 
+            }
         } else {
             initialData.forEach(data => {
                 tbody.appendChild(createRow(data));
             });
+            while(tbody.children.length < 10) {
+                addRow();
+            }
         }
         calculate();
     }
@@ -467,20 +472,171 @@
         document.body.removeChild(div);
     }
 
+    document.addEventListener('paste', function(e) {
+        let pastedData = (e.clipboardData || window.clipboardData).getData('Text');
+        if (!pastedData) return;
+
+        if (pastedData.indexOf('\t') === -1 && pastedData.indexOf('\n') === -1) return;
+        
+        // Let standard copy/pasting inside an input field work normally if it's a single line
+        if (pastedData.indexOf('\n') === -1 && document.activeElement && document.activeElement.tagName === 'INPUT') {
+            return;
+        }
+
+        e.preventDefault();
+        
+        let rows = pastedData.trim().split('\n');
+        let tableBody = document.getElementById('tableBody');
+        
+        let currentRows = tableBody.querySelectorAll('tr');
+        if (currentRows.length === 1) {
+            let inputs = currentRows[0].querySelectorAll('input:not(.km-amt):not(.amount)');
+            let isEmpty = Array.from(inputs).every(input => input.value.trim() === '');
+            if (isEmpty) {
+                currentRows[0].remove();
+            }
+        }
+        
+        let dateRegex = /^(\d{1,2}[-/]\d{1,2}[-/]\d{4}|\d{4}[-/]\d{1,2}[-/]\d{1,2})$/;
+
+        rows.forEach((rowStr) => {
+            let rawCols = rowStr.split('\t').map(c => c.trim());
+            if (rawCols.join('') === '') return;
+            
+            // Extract only non-empty cells to prevent column-shifting from missing data
+            let values = rawCols.filter(c => c !== '');
+            if (values.length < 5) return;
+            
+            // Check first non-empty value instead of strict column 0 to handle leading empty tabs
+            if (isNaN(parseInt(values[0]))) return;
+            
+            let data = new Array(17).fill('');
+            data[0] = values[0];
+            
+            let vIdx = 1;
+            if (values[vIdx] && values[vIdx].match(dateRegex)) {
+                data[1] = ''; // GF NO is missing
+            } else {
+                data[1] = values[vIdx++];
+            }
+            
+            let dateStr = values[vIdx++];
+            if (dateStr && dateStr.match(dateRegex)) {
+                let parts = dateStr.split(/[-/]/);
+                if (parts.length === 3) {
+                    if (parts[2].length === 4) {
+                        data[2] = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                    } else if (parts[0].length === 4) {
+                        data[2] = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                    } else {
+                        data[2] = dateStr;
+                    }
+                }
+            } else {
+                data[2] = dateStr || '';
+            }
+            
+            data[3] = values[vIdx++] || ''; // ROUTE NO
+            
+            let lastIdx = values.length - 1;
+            data[16] = values[lastIdx--]; // AMOUNT
+            
+            let nextVal = values[lastIdx--];
+            if (parseFloat(nextVal) === parseFloat(data[16])) {
+                data[14] = nextVal; // KM AMOUNT
+                data[15] = ''; // TOLL is missing
+            } else {
+                data[15] = nextVal; // TOLL
+                data[14] = values[lastIdx--]; // KM AMOUNT
+            }
+            
+            data[13] = values[lastIdx--]; // RATE
+            data[12] = values[lastIdx--]; // KMS
+            
+            let prevVal = values[lastIdx];
+            if (prevVal && !isNaN(parseFloat(prevVal))) {
+                data[11] = values[lastIdx--]; // WEIGHT
+            }
+            
+            let typeIdx = -1;
+            for (let i = vIdx; i <= lastIdx; i++) {
+                let upper = values[i].toUpperCase();
+                if (upper.includes('TATA') || upper.includes('BOLERO') || upper.includes('EICHER')) {
+                    typeIdx = i;
+                    break;
+                }
+            }
+            
+            if (typeIdx !== -1) {
+                data[9] = values[typeIdx]; // TYPE
+                let townCount = 0;
+                for (let i = vIdx; i < typeIdx && townCount < 5; i++) {
+                    data[4 + townCount] = values[i];
+                    townCount++;
+                }
+                if (typeIdx < lastIdx) {
+                    let vehNoParts = [];
+                    for(let i = typeIdx + 1; i <= lastIdx; i++){
+                        vehNoParts.push(values[i]);
+                    }
+                    data[10] = vehNoParts.join(' ');
+                }
+            } else {
+                let townCount = 0;
+                while (vIdx <= lastIdx && townCount < 5) {
+                    data[4 + townCount] = values[vIdx++];
+                    townCount++;
+                }
+            }
+            
+            let rowNode = createRow(data);
+            tableBody.appendChild(rowNode);
+        });
+        
+        calculate();
+        updateRowNumbers();
+    });
+
     window.addEventListener('beforeprint', () => {
+        document.querySelectorAll('input').forEach(inp => {
+            if (inp.type !== 'hidden' && inp.style.display !== 'none') {
+                let div = document.createElement('div');
+                div.className = 'print-div';
+                div.innerText = inp.value;
+                div.style.wordWrap = 'break-word';
+                div.style.textAlign = getComputedStyle(inp).textAlign;
+                if (inp.classList.contains('num')) {
+                    div.style.textAlign = 'right';
+                }
+                if (inp.type === 'date' && inp.value) {
+                    let parts = inp.value.split('-');
+                    if (parts.length === 3) div.innerText = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+                inp.parentNode.insertBefore(div, inp);
+                inp.dataset.prevDisplay = inp.style.display;
+                inp.style.display = 'none';
+            }
+        });
+
         const table = document.querySelector('table');
-        const maxPrintHeight = 710; 
+        const maxPrintHeight = 650; // Reduced to 650 to ensure strict 1-page fit
         const currentHeight = table.offsetHeight;
         
         if (currentHeight > maxPrintHeight) {
             let scale = maxPrintHeight / currentHeight;
-            document.documentElement.style.setProperty('--scale', scale);
+            document.documentElement.style.setProperty('--scale', scale * 0.95); // 5% buffer
         } else {
             document.documentElement.style.setProperty('--scale', 1);
         }
     });
 
     window.addEventListener('afterprint', () => {
+        document.querySelectorAll('.print-div').forEach(el => el.remove());
+        document.querySelectorAll('input').forEach(inp => {
+            if (inp.dataset.prevDisplay !== undefined) {
+                inp.style.display = inp.dataset.prevDisplay;
+            }
+        });
         document.documentElement.style.setProperty('--scale', 1);
     });
 
