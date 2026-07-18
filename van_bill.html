@@ -98,8 +98,9 @@
 
     @media print {
         body { 
-            padding: 2mm 2mm; 
-            max-width: 100vw;
+            padding: 5mm; 
+            margin: 0;
+            box-sizing: border-box;
         }
         table {
             height: auto; /* Removed 98vh to prevent overflow onto second page */
@@ -344,7 +345,7 @@
             <td><input type="text" list="townList" value="${data[6] || ''}"></td>
             <td><input type="text" list="townList" value="${data[7] || ''}"></td>
             <td><input type="text" list="townList" value="${data[8] || ''}"></td>
-            <td><input type="text" list="vehTypeList" value="${data[9] || ''}"></td>
+            <td><input type="text" list="vehTypeList" value="${data[9] || ''}" oninput="autoFillRate(this)"></td>
             <td><input type="text" value="${data[10] || ''}"></td>
             <td><input type="number" class="num" value="${data[11] || ''}"></td>
             <td><input type="number" class="num kms" value="${data[12] || ''}" oninput="calculate()"></td>
@@ -382,6 +383,24 @@
     function removeRow(btn) {
         btn.closest('tr').remove();
         calculate();
+    }
+
+    function autoFillRate(input) {
+        let row = input.closest('tr');
+        let rateInput = row.querySelector('.rate');
+        let val = input.value.toUpperCase().trim();
+        
+        let rates = {
+            'TATA 407': 16.5,
+            'TATA 709': 20.39,
+            'BOLERO': 16.5,
+            'TATA 407 TURBO': 19.39
+        };
+        
+        if (rates[val] !== undefined) {
+            rateInput.value = rates[val];
+            calculate();
+        }
     }
 
     function formatNum(val) {
