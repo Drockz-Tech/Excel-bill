@@ -659,12 +659,12 @@
         });
 
         const table = document.querySelector('table');
-        const maxPrintHeight = 650; // Reduced to 650 to ensure strict 1-page fit
+        const maxPrintHeight = 710; 
         const currentHeight = table.offsetHeight;
         
         if (currentHeight > maxPrintHeight) {
             let scale = maxPrintHeight / currentHeight;
-            document.documentElement.style.setProperty('--scale', scale * 0.95); // 5% buffer
+            document.documentElement.style.setProperty('--scale', scale);
         } else {
             document.documentElement.style.setProperty('--scale', 1);
         }
