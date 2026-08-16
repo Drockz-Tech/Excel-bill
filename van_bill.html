@@ -108,7 +108,7 @@
             box-sizing: border-box;
         }
         table {
-            height: 185mm; /* Stretches to fill A4 landscape */
+            height: 170mm; /* Stretches to fill most of A4 landscape without spilling */
         }
         .no-print { display: none !important; }
         .no-print-td { display: none !important; }
@@ -643,7 +643,8 @@
                 let div = document.createElement('div');
                 div.className = 'print-div';
                 div.innerText = inp.value;
-                div.style.wordWrap = 'break-word';
+                div.style.whiteSpace = 'nowrap';
+                div.style.overflow = 'hidden';
                 div.style.textAlign = getComputedStyle(inp).textAlign;
                 if (inp.classList.contains('num')) {
                     div.style.textAlign = 'right';
@@ -659,21 +660,15 @@
         });
 
         const table = document.querySelector('table');
-        
-        const originalWidth = table.style.width;
-        table.style.width = '1080px';
-        
-        const maxPrintHeight = 710; 
+        const maxPrintHeight = 650; // Reduced to 650 to ensure strict 1-page fit
         const currentHeight = table.offsetHeight;
         
         if (currentHeight > maxPrintHeight) {
             let scale = maxPrintHeight / currentHeight;
-            document.documentElement.style.setProperty('--scale', scale);
+            document.documentElement.style.setProperty('--scale', scale * 0.95); // 5% buffer
         } else {
             document.documentElement.style.setProperty('--scale', 1);
         }
-        
-        table.style.width = originalWidth;
     });
 
     window.addEventListener('afterprint', () => {
