@@ -108,7 +108,7 @@
             box-sizing: border-box;
         }
         table {
-            height: auto; /* Removed 98vh to prevent overflow onto second page */
+            height: 185mm; /* Stretches to fill A4 landscape */
         }
         .no-print { display: none !important; }
         .no-print-td { display: none !important; }
@@ -493,13 +493,13 @@
         let tableBody = document.getElementById('tableBody');
         
         let currentRows = tableBody.querySelectorAll('tr');
-        if (currentRows.length === 1) {
-            let inputs = currentRows[0].querySelectorAll('input:not(.km-amt)');
+        currentRows.forEach(row => {
+            let inputs = row.querySelectorAll('input:not(.km-amt)');
             let isEmpty = Array.from(inputs).every(input => input.value.trim() === '');
             if (isEmpty) {
-                currentRows[0].remove();
+                row.remove();
             }
-        }
+        });
         
         let dateRegex = /^(\d{1,2}[-/]\d{1,2}[-/]\d{4}|\d{4}[-/]\d{1,2}[-/]\d{1,2})$/;
 
@@ -659,6 +659,10 @@
         });
 
         const table = document.querySelector('table');
+        
+        const originalWidth = table.style.width;
+        table.style.width = '1080px';
+        
         const maxPrintHeight = 710; 
         const currentHeight = table.offsetHeight;
         
@@ -668,6 +672,8 @@
         } else {
             document.documentElement.style.setProperty('--scale', 1);
         }
+        
+        table.style.width = originalWidth;
     });
 
     window.addEventListener('afterprint', () => {
