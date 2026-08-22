@@ -48,9 +48,9 @@
     .col-gf { width: 9.0%; }
     .col-date { width: 7.0%; }
     .col-route { width: 5.0%; }
-    .col-town { width: 6.7%; }
-    .col-veh-type { width: 7.5%; }
-    .col-veh-no { width: 7.5%; }
+    .col-town { width: 5.5%; }
+    .col-veh-type { width: 10.5%; }
+    .col-veh-no { width: 10.5%; }
     .col-wt { width: 6.5%; }
     .col-kms { width: 6.0%; }
     .col-rate { width: 6.0%; }
@@ -215,13 +215,13 @@
             <col class="col-gf" style="width: 9.0%;">
             <col class="col-date" style="width: 7.0%;">
             <col class="col-route" style="width: 5.0%;">
-            <col class="col-town" style="width: 6.7%;">
-            <col class="col-town" style="width: 6.7%;">
-            <col class="col-town" style="width: 6.7%;">
-            <col class="col-town" style="width: 6.7%;">
-            <col class="col-town" style="width: 6.7%;">
-            <col class="col-veh-type" style="width: 7.5%;">
-            <col class="col-veh-no" style="width: 7.5%;">
+            <col class="col-town" style="width: 5.5%;">
+            <col class="col-town" style="width: 5.5%;">
+            <col class="col-town" style="width: 5.5%;">
+            <col class="col-town" style="width: 5.5%;">
+            <col class="col-town" style="width: 5.5%;">
+            <col class="col-veh-type" style="width: 10.5%;">
+            <col class="col-veh-no" style="width: 10.5%;">
             <col class="col-wt" style="width: 6.5%;">
             <col class="col-kms" style="width: 6.0%;">
             <col class="col-rate" style="width: 6.0%;">
@@ -288,10 +288,11 @@
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="14" style="font-weight: bold; text-align: right; font-size: var(--font-md); padding-right: 10px;">
+            <td colspan="12"></td>
+            <td colspan="2" style="border-right: none; font-weight: bold; text-align: left; padding-left: 10px; font-size: var(--font-lg);">
                 Sub Total
             </td>
-            <td style="font-weight: bold; text-align: right; font-size: var(--font-md);" id="sumKmAmt"></td>
+            <td style="border-left: none; font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumKmAmt"></td>
             <td class="no-print"></td>
         </tr>
         <tr>
@@ -338,7 +339,7 @@
         tr.innerHTML = `
             <td><input type="text" value="${data[0] || ''}"></td>
             <td><input type="text" value="${data[1] || ''}"></td>
-            <td><input type="date" value="${data[2] || ''}" style="font-size: 8pt; padding:0;"></td>
+            <td><input type="date" class="date-input" value="${data[2] || ''}" style="font-size: 8pt; padding:0;" onchange="syncDates(this)"></td>
             <td><input type="text" list="routeList" value="${data[3] || ''}"></td>
             <td class="town-td"><input type="text" list="townList" value="${data[4] || ''}" class="town-input"></td>
             <td class="town-td"><input type="text" list="townList" value="${data[5] || ''}" class="town-input"></td>
@@ -381,6 +382,20 @@
     function removeRow(btn) {
         btn.closest('tr').remove();
         calculate();
+    }
+
+    function syncDates(input) {
+        let val = input.value;
+        if (!val) return;
+        let row = input.closest('tr');
+        let nextRow = row.nextElementSibling;
+        while (nextRow) {
+            let dateInput = nextRow.querySelector('.date-input');
+            if (dateInput) {
+                dateInput.value = val;
+            }
+            nextRow = nextRow.nextElementSibling;
+        }
     }
 
     function autoFillRate(input) {
@@ -623,6 +638,8 @@
                 div.style.fontSize = `calc(${fSize}pt * var(--scale))`;
                 div.style.whiteSpace = 'nowrap';
                 div.style.overflow = 'hidden';
+                div.style.textAlign = 'left';
+                div.style.paddingLeft = '2px';
                 
                 let firstInp = townTds[0].querySelector('input');
                 firstInp.dataset.prevDisplay = firstInp.style.display;
