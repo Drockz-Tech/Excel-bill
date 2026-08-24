@@ -46,7 +46,8 @@
     .col-sr { width: 5%; }
     .col-annex { width: 8%; }
     .col-sac { width: 8%; }
-    .col-period { width: 32%; }
+    .col-period { width: 27%; }
+    .col-trips { width: 5%; }
     .col-km { width: 14%; }
     .col-toll { width: 14%; }
     .col-amount { width: 14%; }
@@ -93,7 +94,7 @@
             padding: 5mm 10mm; /* Minimal safe padding for printer */
             max-width: 100vw;
         }
-        .col-period { width: 37%; }
+        .col-period { width: 32%; }
         .no-print { display: none !important; }
         .editable { border-bottom: none; }
         input { background: transparent !important; }
@@ -130,6 +131,7 @@
         <col class="col-annex">
         <col class="col-sac">
         <col class="col-period">
+        <col class="col-trips">
         <col class="col-km">
         <col class="col-toll">
         <col class="col-amount">
@@ -137,13 +139,13 @@
     </colgroup>
     <thead>
         <tr>
-            <th colspan="7" style="text-align: center; color: #004d99; font-size: var(--font-xxl); padding: var(--pad-md);">
+            <th colspan="8" style="text-align: center; color: #004d99; font-size: var(--font-xxl); padding: var(--pad-md);">
                 JAI JULELAL TRANSPORT
             </th>
             <th class="no-print"></th>
         </tr>
         <tr>
-            <th colspan="7" style="text-align: center; padding: var(--pad-sm); font-weight: normal; font-size: var(--font-md);">
+            <th colspan="8" style="text-align: center; padding: var(--pad-sm); font-weight: normal; font-size: var(--font-md);">
                 QUATER NO 22, SHASTRI NAGAR, REFUGEE COLONY,<br>
                 JUNCTION PLOT, RAJKOT - 360001<br>
                 <strong>M.: 98259 97749 / 95103 00372</strong>
@@ -152,7 +154,7 @@
         </tr>
         <tr>
             <th colspan="2" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">Debit Memo</th>
-            <th colspan="3" style="text-align: center; font-size: var(--font-xl);">PARFOMA INVOICE</th>
+            <th colspan="4" style="text-align: center; font-size: var(--font-xl);">PARFOMA INVOICE</th>
             <th colspan="2" style="padding: var(--pad-sm); text-align: right; font-weight: normal; font-size: var(--font-md);">Original</th>
             <th class="no-print"></th>
         </tr>
@@ -160,7 +162,7 @@
             <th colspan="3" style="padding: var(--pad-md); text-align: left; font-size: var(--font-md);">
                 M/S. : <strong>MRF LIMITED</strong>
             </th>
-            <th colspan="4" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
+            <th colspan="5" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
                 Invoice No. <span style="margin-left:30px;">: <span contenteditable="true" class="editable">4</span></span>
             </th>
             <th class="no-print"></th>
@@ -169,7 +171,7 @@
             <th colspan="3" style="padding: var(--pad-md); text-align: center; font-size: var(--font-lg);">
                 <strong>RAJKOT</strong>
             </th>
-            <th colspan="4" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
+            <th colspan="5" style="padding: var(--pad-md); text-align: left; font-size: var(--font-xl);">
                 Date <span style="margin-left:80px;">: <span contenteditable="true" class="editable">03/06/2026</span></span>
             </th>
             <th class="no-print"></th>
@@ -178,7 +180,7 @@
             <th colspan="3" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
                 Place of Supply: 24 - Gujarat
             </th>
-            <th colspan="4" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+            <th colspan="5" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
                 Annexure Type : <strong>VAN BILL</strong>
             </th>
             <th class="no-print"></th>
@@ -187,7 +189,7 @@
             <th colspan="3" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
                 GSTIN NO. : <span contenteditable="true" class="editable">24AAACM4154G1ZT</span>
             </th>
-            <th colspan="4" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
+            <th colspan="5" style="padding: var(--pad-sm); text-align: left; font-weight: normal; font-size: var(--font-md);">
                 Annexure Period : 
             </th>
             <th class="no-print"></th>
@@ -197,6 +199,7 @@
             <th class="col-annex" style="padding: var(--pad-md); font-size: var(--font-md);">Annexure No.</th>
             <th class="col-sac" style="padding: var(--pad-md); font-size: var(--font-md);">SAC Code</th>
             <th class="col-period" style="padding: var(--pad-md); font-size: var(--font-md);">Annexure Period</th>
+            <th class="col-trips" style="padding: var(--pad-md); font-size: var(--font-md);">No. of Trips</th>
             <th class="col-km" style="padding: var(--pad-md); font-size: var(--font-md);">KM Amount</th>
             <th class="col-toll" style="padding: var(--pad-md); font-size: var(--font-md);">Toll Amount</th>
             <th class="col-amount" style="padding: var(--pad-md); font-size: var(--font-md);">Amount</th>
@@ -211,7 +214,7 @@
             <td colspan="3" style="font-weight: bold; font-size: var(--font-md);">
                 GSTIN NO. : <span contenteditable="true" class="editable">24AESPB6082M1Z3</span>
             </td>
-            <td style="font-weight: bold; font-size: var(--font-md); padding: var(--pad-sm) var(--pad-md);">
+            <td colspan="2" style="font-weight: bold; font-size: var(--font-md); padding: var(--pad-sm) var(--pad-md);">
                 <span style="float: left;">PAN NO. AEX</span>
                 <span style="float: right;">Sub Total</span>
             </td>
@@ -221,7 +224,7 @@
             <td class="no-print"></td>
         </tr>
         <tr>
-            <td colspan="7" style="font-weight: bold; vertical-align: top; font-size: var(--font-md);">
+            <td colspan="8" style="font-weight: bold; vertical-align: top; font-size: var(--font-md);">
                 Bank Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: HDFC BANK<br>
                 Bank A/C NO. &nbsp;&nbsp;&nbsp;&nbsp;: 0378200002743<br>
                 RTGS / NEFT Code : HDFC0000378
@@ -229,7 +232,7 @@
             <td class="no-print"></td>
         </tr>
         <tr>
-            <td colspan="4" rowspan="2" style="font-weight: bold; font-size: var(--font-md); vertical-align: top;">
+            <td colspan="5" rowspan="2" style="font-weight: bold; font-size: var(--font-md); vertical-align: top;">
                 <div style="margin-bottom: var(--pad-lg);">Total GST</div>
                 <div>Bill Amount</div>
             </td>
@@ -254,13 +257,13 @@
             <td class="no-print"></td>
         </tr>
         <tr>
-            <td colspan="7" style="padding: var(--pad-md); font-size: var(--font-md);">
+            <td colspan="8" style="padding: var(--pad-md); font-size: var(--font-md);">
                 Note : 
             </td>
             <td class="no-print"></td>
         </tr>
         <tr>
-            <td colspan="4" style="font-size: var(--font-sm); font-weight: bold; vertical-align: top;">
+            <td colspan="5" style="font-size: var(--font-sm); font-weight: bold; vertical-align: top;">
                 Terms & Condition :<br>
                 1. This is GST Taxable Invoice. We are paying GST @12% on Forward Charge Basis on Transportation services provided by us So, No Reverse Charge Tax is Payable by Reccipient<br>
                 2. "Subject to 'Rajkot' Jurisdiction only. E.&.O.E"
@@ -293,8 +296,9 @@
             <td><input type="text" class="annex" value="${data[1]}" oninput="syncAnnex(this)"></td>
             <td><input type="text" class="sac" value="${data[2]}" onfocus="storeOldSac(this)" oninput="syncSac(this)"></td>
             <td><input type="text" value="${data[3]}"></td>
-            <td><input type="number" class="km" value="${data[4]}" oninput="calculate()"></td>
-            <td><input type="number" class="toll" value="${data[5]}" oninput="calculate()"></td>
+            <td><input type="text" class="trips" value="${data[4] || ''}"></td>
+            <td><input type="number" class="km" value="${data[5]}" oninput="calculate()"></td>
+            <td><input type="number" class="toll" value="${data[6]}" oninput="calculate()"></td>
             <td><input type="text" class="amount" readonly></td>
             <td class="no-print" style="text-align:center;"><button class="remove-btn" onclick="removeRow(this)">X</button></td>
         `;
@@ -387,7 +391,7 @@
                 }
             }
         }
-        tbody.appendChild(createRow([nextSr, lastAnnex, lastSac, "", "", ""]));
+        tbody.appendChild(createRow([nextSr, lastAnnex, lastSac, "", "", "", ""]));
         calculate();
     }
 

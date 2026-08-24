@@ -102,18 +102,38 @@
     }
 
     @media print {
+        :root {
+            --font-sm: 8pt;
+            --font-md: 9pt;
+            --font-lg: 11pt;
+            --font-xl: 14pt;
+            --font-xxl: 20pt;
+            --pad-sm: 1px;
+            --pad-md: 3px;
+            --pad-lg: 5px;
+        }
+        @page { size: A4 landscape; margin: 5mm; }
         body { 
-            padding: 5mm; 
+            padding: 0; 
             margin: 0;
             box-sizing: border-box;
         }
         table {
-            height: 170mm; /* Stretches to fill most of A4 landscape without spilling */
+            height: 98vh; /* Stretches to fill most of A4 landscape */
+        }
+        th, td {
+            padding: var(--pad-sm);
         }
         .no-print { display: none !important; }
         .no-print-td { display: none !important; }
         .editable { border-bottom: none; }
-        input, select { background: transparent !important; -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        input, select { 
+            background: transparent !important; 
+            -webkit-appearance: none; 
+            -moz-appearance: none; 
+            appearance: none; 
+            color: #000;
+        }
         input:focus { outline: none !important; }
         input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
         input[type="date"]::-webkit-inner-spin-button { display: none !important; }
@@ -608,102 +628,21 @@
         updateRowNumbers();
     });
 
-    window.addEventListener('beforeprint', () => {
-        document.querySelectorAll('#tableBody tr').forEach(row => {
-            let townTds = row.querySelectorAll('.town-td');
-            if (townTds.length === 5) {
-                let towns = [];
-                townTds.forEach(td => {
-                    let inp = td.querySelector('input');
-                    if (inp && inp.value.trim()) {
-                        towns.push(inp.value.trim());
-                    }
-                });
-                
-                let mergedText = towns.join(', ');
-                
-                let div = document.createElement('div');
-                div.className = 'print-div town-print-div';
-                div.innerText = mergedText;
-                
-                // Dynamically calculate font size to fit on one line
-                let len = mergedText.length;
-                let fSize = 9; // default is 9pt
-                if (len > 75) fSize = 5.5;
-                else if (len > 65) fSize = 6;
-                else if (len > 55) fSize = 6.5;
-                else if (len > 45) fSize = 7.5;
-                else if (len > 35) fSize = 8.2;
-                
-                div.style.fontSize = `calc(${fSize}pt * var(--scale))`;
-                div.style.whiteSpace = 'nowrap';
-                div.style.overflow = 'hidden';
-                div.style.textAlign = 'left';
-                div.style.paddingLeft = '2px';
-                
-                let firstInp = townTds[0].querySelector('input');
-                firstInp.dataset.prevDisplay = firstInp.style.display;
-                firstInp.style.display = 'none';
-                townTds[0].insertBefore(div, firstInp);
-                
-                townTds[0].setAttribute('colspan', '5');
-                townTds[0].classList.add('merged-town-td');
-                
-                for (let i = 1; i < 5; i++) {
-                    townTds[i].classList.add('no-print-td');
-                }
+    function renderInitial() {
+        if (initialData.length === 0) {
+            for(let i=0; i<25; i++) {
+                addRow(); 
             }
-        });
-
-        document.querySelectorAll('input:not(.town-input)').forEach(inp => {
-            if (inp.type !== 'hidden' && inp.style.display !== 'none') {
-                let div = document.createElement('div');
-                div.className = 'print-div';
-                div.innerText = inp.value;
-                div.style.whiteSpace = 'nowrap';
-                div.style.overflow = 'hidden';
-                div.style.textAlign = getComputedStyle(inp).textAlign;
-                if (inp.classList.contains('num')) {
-                    div.style.textAlign = 'right';
-                }
-                if (inp.type === 'date' && inp.value) {
-                    let parts = inp.value.split('-');
-                    if (parts.length === 3) div.innerText = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-                inp.parentNode.insertBefore(div, inp);
-                inp.dataset.prevDisplay = inp.style.display;
-                inp.style.display = 'none';
-            }
-        });
-
-        const table = document.querySelector('table');
-        const maxPrintHeight = 650; // Reduced to 650 to ensure strict 1-page fit
-        const currentHeight = table.offsetHeight;
-        
-        if (currentHeight > maxPrintHeight) {
-            let scale = maxPrintHeight / currentHeight;
-            document.documentElement.style.setProperty('--scale', scale * 0.95); // 5% buffer
         } else {
-            document.documentElement.style.setProperty('--scale', 1);
-        }
-    });
-
-    window.addEventListener('afterprint', () => {
-        document.querySelectorAll('.print-div').forEach(el => el.remove());
-        document.querySelectorAll('input').forEach(inp => {
-            if (inp.dataset.prevDisplay !== undefined) {
-                inp.style.display = inp.dataset.prevDisplay;
+            initialData.forEach(data => {
+                tbody.appendChild(createRow(data));
+            });
+            while(tbody.children.length < 25) {
+                addRow();
             }
-        });
-        document.querySelectorAll('.no-print-td').forEach(td => {
-            td.classList.remove('no-print-td');
-        });
-        document.querySelectorAll('.merged-town-td').forEach(td => {
-            td.removeAttribute('colspan');
-            td.classList.remove('merged-town-td');
-        });
-        document.documentElement.style.setProperty('--scale', 1);
-    });
+        }
+        calculate();
+    }
 
     renderInitial();
 </script>
