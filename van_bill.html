@@ -127,6 +127,8 @@
         .no-print { display: none !important; }
         .no-print-td { display: none !important; }
         .editable { border-bottom: none; }
+        .town-input-td { display: none !important; }
+        .town-print-td { display: table-cell !important; }
         input, select { 
             background: transparent !important; 
             -webkit-appearance: none; 
@@ -360,12 +362,13 @@
             <td><input type="text" value="${data[0] || ''}"></td>
             <td><input type="text" value="${data[1] || ''}"></td>
             <td><input type="date" class="date-input" value="${data[2] || ''}" style="font-size: 8pt; padding:0;" onchange="syncDates(this)"></td>
-            <td><input type="text" list="routeList" value="${data[3] || ''}"></td>
-            <td class="town-td"><input type="text" list="townList" value="${data[4] || ''}" class="town-input"></td>
-            <td class="town-td"><input type="text" list="townList" value="${data[5] || ''}" class="town-input"></td>
-            <td class="town-td"><input type="text" list="townList" value="${data[6] || ''}" class="town-input"></td>
-            <td class="town-td"><input type="text" list="townList" value="${data[7] || ''}" class="town-input"></td>
-            <td class="town-td"><input type="text" list="townList" value="${data[8] || ''}" class="town-input"></td>
+            <td><input type="text" list="routeList" value="${data[3] || ''}" oninput="autoFillTowns(this)" onfocus="this.select()"></td>
+            <td class="town-td town-input-td"><input type="text" list="townList" value="${data[4] || ''}" class="town-input" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="town-td town-input-td"><input type="text" list="townList" value="${data[5] || ''}" class="town-input" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="town-td town-input-td"><input type="text" list="townList" value="${data[6] || ''}" class="town-input" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="town-td town-input-td"><input type="text" list="townList" value="${data[7] || ''}" class="town-input" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="town-td town-input-td"><input type="text" list="townList" value="${data[8] || ''}" class="town-input" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="town-print-td" colspan="5" style="display:none; text-align: left; white-space: nowrap; overflow: hidden; font-size: var(--font-sm);"></td>
             <td><input type="text" list="vehTypeList" value="${data[9] || ''}" oninput="autoFillRate(this)"></td>
             <td><input type="text" value="${data[10] || ''}"></td>
             <td><input type="number" class="num" value="${data[11] || ''}"></td>
@@ -418,6 +421,37 @@
         }
     }
 
+    function autoFillTowns(input) {
+        let val = input.value.toUpperCase().trim();
+        let row = input.closest('tr');
+        
+        let routes = {
+            'U1': ['JAMNAGAR', 'LALPUR', 'DHROL', '', ''],
+            'U2': ['JAMNAGAR', 'KALAVAD', 'DHROL', '', ''],
+            'U3': ['JAMNAGAR', 'DHROL', '', '', ''],
+            'U4': ['WAKANER', 'HALVAD', 'CHOTILA', 'THANGADH', ''],
+            'U5': ['MORBI', 'PIPLIYA', 'TANKARA', '', ''],
+            'U6': ['DHORAJI', 'UPLETA', 'JAMJODHPUR', 'BHANVAD', ''],
+            'U7': ['RANAVAV', 'PORBANDAR', 'MIYANI', 'KUTIYANA', ''],
+            'U8': ['SIKAPATIYA', 'JAMKHAMBHADIYA', 'BHATIYA', 'MITHAPUR', 'DHWARIKA'],
+            'U9': ['GONDAL', 'VERAVAL', 'KESOD', 'JETPUR', 'GADU'],
+            'U10': ['GONDAL', 'GADU', 'VERAVAL', 'SUTRAPADA', 'JETPUR'],
+            'U11': ['MENDERDA', 'TALALA', 'KODINAR', 'DOLASA', 'UNA'],
+            'U12': ['JETPUR', 'JUNAGADH', 'MANGROL', 'MADHAVPUR', '']
+        };
+        
+        if (routes[val]) {
+            let townInputs = row.querySelectorAll('.town-input');
+            let towns = routes[val];
+            for (let i = 0; i < 5; i++) {
+                if (townInputs[i]) {
+                    townInputs[i].value = towns[i] || '';
+                }
+            }
+            calculate(); // Update the print view
+        }
+    }
+
     function autoFillRate(input) {
         let row = input.closest('tr');
         let rateInput = row.querySelector('.rate');
@@ -454,6 +488,31 @@
             row.querySelector('.km-amt').value = formatNum(kmAmt);
             
             kmAmtTotal += kmAmt;
+
+            let townInputs = row.querySelectorAll('.town-input');
+            if (townInputs.length > 0) {
+                let towns = [];
+                townInputs.forEach(inp => {
+                    if (inp.value.trim() !== '') towns.push(inp.value.trim());
+                });
+                
+                let joinedTowns = towns.join(', ');
+                let outputEl = row.querySelector('.town-print-td');
+                outputEl.innerText = joinedTowns;
+                
+                let len = joinedTowns.length;
+                if (len > 60) {
+                    outputEl.style.fontSize = "5.5pt";
+                } else if (len > 50) {
+                    outputEl.style.fontSize = "6.5pt";
+                } else if (len > 40) {
+                    outputEl.style.fontSize = "7.5pt";
+                } else if (len > 30) {
+                    outputEl.style.fontSize = "8pt";
+                } else {
+                    outputEl.style.fontSize = "var(--font-sm)";
+                }
+            }
         });
 
         kmAmtTotal = Math.round(kmAmtTotal * 100) / 100;
@@ -471,16 +530,22 @@
         
         for (let i = 0; i < originalInputs.length; i++) {
             let val = originalInputs[i].value;
-            let parent = clonedInputs[i].parentNode;
-            parent.innerText = val; 
+            if (clonedInputs[i]) {
+                let parent = clonedInputs[i].parentNode;
+                parent.innerText = val; 
+            }
         }
 
         let originalSpans = document.querySelector('table').querySelectorAll('.editable');
         let clonedSpans = table.querySelectorAll('.editable');
         for (let i = 0; i < originalSpans.length; i++) {
             let val = originalSpans[i].innerText;
-            clonedSpans[i].parentNode.innerText = val;
+            if (clonedSpans[i]) {
+                clonedSpans[i].parentNode.innerText = val;
+            }
         }
+
+        table.querySelectorAll('.town-print-td').forEach(el => el.remove());
 
         let div = document.createElement('div');
         div.appendChild(table);
@@ -625,7 +690,6 @@
         });
         
         calculate();
-        updateRowNumbers();
     });
 
     function renderInitial() {
