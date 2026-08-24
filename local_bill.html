@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local Bill Annexure</title>
+<style>
+    :root {
+        --scale: 1;
+        --font-sm: calc(9pt * var(--scale));
+        --font-md: calc(12pt * var(--scale));
+        --font-lg: calc(14pt * var(--scale));
+        --font-xl: calc(16pt * var(--scale));
+        --font-xxl: calc(26pt * var(--scale));
+        --pad-sm: calc(4px * var(--scale));
+        --pad-md: calc(8px * var(--scale));
+        --pad-lg: calc(12px * var(--scale));
+    }
+
+    @page { size: A4 portrait; margin: 0; }
+    
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body { 
+        font-family: Arial, sans-serif; 
+        padding: var(--pad-lg); 
+        font-size: var(--font-md); 
+        background-color: #fff; 
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: 2px solid black; 
+        table-layout: fixed;
+    }
+    th, td { 
+        border: 1px solid black; 
+        padding: var(--pad-sm); 
+        text-align: center;
+    }
+    
+    .col-sr { width: 6%; }
+    .col-gf { width: 14%; }
+    .col-date { width: 12%; }
+    .col-town { width: 12%; }
+    .col-wt { width: 16%; }
+    .col-veh-type { width: 18%; }
+    .col-amount { width: 12%; }
+    .col-action { width: 10%; }
+
+    input, select { 
+        width: 100%; 
+        box-sizing: border-box; 
+        border: none; 
+        text-align: center; 
+        font-family: inherit; 
+        font-size: var(--font-sm);
+        background: transparent;
+        padding: 0;
+        color: #000;
+        opacity: 1;
+    }
+    input[readonly], input:disabled {
+        color: #000;
+        -webkit-text-fill-color: #000;
+        opacity: 1;
+    }
+    input.num { 
+        text-align: right; 
+        padding-right: 5px;
+    }
+    input:focus, select:focus { 
+        outline: 1px solid #999; 
+        background: #f9f9f9; 
+    }
+    
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    
+    .editable {
+        display: inline-block;
+        min-width: 30px;
+        padding: 0 4px;
+        outline: none;
+        cursor: text;
+    }
+    .editable:focus {
+        background: #f9f9f9;
+        border-bottom: 1px solid #333;
+    }
+
+    @media print {
+        :root {
+            --font-sm: 8pt;
+            --font-md: 9pt;
+            --font-lg: 11pt;
+            --font-xl: 14pt;
+            --font-xxl: 22pt;
+            --pad-sm: 2px;
+            --pad-md: 4px;
+            --pad-lg: 5px;
+        }
+        @page { size: A4 portrait; margin: 5mm; }
+        body { 
+            padding: 0; 
+            margin: 0;
+            box-sizing: border-box;
+        }
+        table {
+            height: 98vh;
+        }
+        th, td {
+            padding: var(--pad-sm);
+        }
+        .col-sr { width: 6%; }
+        .col-gf { width: 16%; }
+        .col-date { width: 14%; }
+        .col-town { width: 12%; }
+        .col-wt { width: 18%; }
+        .col-veh-type { width: 20%; }
+        .col-amount { width: 14%; }
+        .col-action { display: none !important; width: 0 !important; }
+        .no-print { display: none !important; }
+        .editable { border-bottom: none; }
+        input, select { 
+            background: transparent !important; 
+            -webkit-appearance: none; 
+            -moz-appearance: none; 
+            appearance: none; 
+            color: #000;
+        }
+        input:focus { outline: none !important; }
+        input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+        input[type="date"]::-webkit-inner-spin-button { display: none !important; }
+        input[type="date"]::-webkit-clear-button { display: none !important; }
+    }
+    
+    .remove-btn { 
+        color: red; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border: none; 
+        background: transparent; 
+        font-size: var(--font-md);
+    }
+    .add-btn { 
+        margin-top: 20px; 
+        padding: 10px 20px; 
+        font-size: var(--font-lg); 
+        cursor: pointer; 
+        border: 1px solid #000;
+        background: #eee;
+    }
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align: center; margin-bottom: 20px;">
+    <a href="index.html" style="font-size: 20px; color: blue; text-decoration: underline; margin-right: 20px;">Go to Main Invoice</a>
+    <a href="van_bill.html" style="font-size: 20px; color: blue; text-decoration: underline;">Go to Van Bill</a>
+</div>
+
+<table>
+    <colgroup>
+        <col class="col-sr">
+        <col class="col-gf">
+        <col class="col-date">
+        <col class="col-town">
+        <col class="col-wt">
+        <col class="col-veh-type">
+        <col class="col-amount">
+        <col class="col-action no-print">
+    </colgroup>
+    <thead>
+        <tr>
+            <th colspan="8" style="text-align: center; font-size: var(--font-xxl); padding: var(--pad-sm);">
+                JAI JULELAL TRANSPORT
+            </th>
+        </tr>
+        <tr>
+            <th colspan="8" style="text-align: center; padding: var(--pad-sm); font-weight: normal; font-size: var(--font-md);">
+                QUATER NO 22, SHASTRI NAGAR, REFUGEE COLONY,<br>
+                JUNCTION PLOT, RAJKOT - 360001
+            </th>
+        </tr>
+        <tr>
+            <th colspan="8" style="text-align: center; font-size: var(--font-lg); padding: var(--pad-sm);">Annexure</th>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">M/S :</th>
+            <th colspan="3" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><strong>MRF LIMITED</strong></th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure No.</th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><span contenteditable="true" class="editable" style="width: 100%;">50</span></th>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"></th>
+            <th colspan="3" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">RAJKOT</th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure Date</th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><span contenteditable="true" class="editable" style="width: 100%;">05/05/2026</span></th>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">GSTIN NO.:</th>
+            <th colspan="3" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);"><span contenteditable="true" class="editable" style="width: 100%;">24AAACM4154G1ZT</span></th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">Annexure type</th>
+            <th colspan="2" style="text-align: left; padding: var(--pad-sm); font-size: var(--font-sm);">: LOCAL BILL</th>
+        </tr>
+        <tr>
+            <th class="col-sr">SR NO</th>
+            <th class="col-gf">G.F.NO</th>
+            <th class="col-date">DATE</th>
+            <th class="col-town">TOWNS COVERED</th>
+            <th class="col-wt">WEIGHT</th>
+            <th class="col-veh-type">TYPE OF VEHICLE</th>
+            <th class="col-amount">AMOUNT</th>
+            <th class="col-action no-print">Action</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Rows injected by javascript -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" style="text-align: left; font-size: var(--font-sm);">
+                GSTIN NO.: <span contenteditable="true" class="editable">24AESPB6082M1Z3</span>
+            </td>
+            <td style="font-weight: bold; text-align: center; font-size: var(--font-md);">
+                TOTAL
+            </td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumAmount"></td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="5" style="text-align: center; font-size: var(--font-md); padding: var(--pad-md);">
+                <span style="float: left;">Amount in words:</span>
+                <strong id="amountInWords"></strong>
+            </td>
+            <td style="font-weight: bold; text-align: center; font-size: var(--font-md);">
+                GRAND TOTAL
+            </td>
+            <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="grandTotal"></td>
+            <td class="no-print"></td>
+        </tr>
+        <tr>
+            <td colspan="5" style="font-size: var(--font-sm); vertical-align: top; text-align: left; padding-bottom: 30px;">
+                Terms & Condition :<br>
+                1. GST is payable by the recipient under RCM basis.<br>
+                2. "subject to 'RAJKOT' jurisdiction only. E.&.O.E"
+            </td>
+            <td colspan="3" style="text-align: center; vertical-align: bottom; font-size: var(--font-sm); padding-bottom: 10px;">
+                <span style="float: left; margin-left: 20px;">Receiver's Signature</span>
+                <span style="float: right; margin-right: 20px;">(Authorised Signature)<br>For, JAI JULELAL TRANSPORT</span>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="no-print" style="text-align: center; margin-top: 20px;">
+    <button class="add-btn" onclick="addRow()">+ Add Row</button>
+    <button class="add-btn" onclick="window.print()" style="margin-left:10px;">Print Invoice</button>
+</div>
+
+<script>
+    const tbody = document.getElementById('tableBody');
+
+    function createRow(srNo) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${srNo}"></td>
+            <td><input type="text" value="" onfocus="this.select()"></td>
+            <td><input type="date" class="date-input" style="font-size: 8pt; padding:0;" onchange="syncDates(this)"></td>
+            <td><input type="text" value="LOCAL" class="town-input" onfocus="this.select()"></td>
+            <td><input type="number" class="num" value="" onfocus="this.select()"></td>
+            <td><input type="text" value="BOLERO PICKUP" class="veh-input" onfocus="this.select()"></td>
+            <td><input type="number" class="num amount" value="800" oninput="calculate()" onfocus="this.select()"></td>
+            <td class="no-print" style="text-align:center;"><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+        `;
+        return tr;
+    }
+
+    function syncDates(input) {
+        let val = input.value;
+        if (!val) return;
+        let row = input.closest('tr');
+        let nextRow = row.nextElementSibling;
+        while (nextRow) {
+            let dateInput = nextRow.querySelector('.date-input');
+            if (dateInput) {
+                dateInput.value = val;
+            }
+            nextRow = nextRow.nextElementSibling;
+        }
+    }
+
+    function addRow() {
+        let nextSr = tbody.children.length + 1;
+        tbody.appendChild(createRow(nextSr));
+        calculate();
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+        updateRowNumbers();
+        calculate();
+    }
+    
+    function updateRowNumbers() {
+        let rows = tbody.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            let srInput = row.querySelector('td:first-child input');
+            if (srInput) srInput.value = index + 1;
+        });
+    }
+
+    function calculate() {
+        let total = 0;
+
+        document.querySelectorAll('#tableBody tr').forEach(row => {
+            let amount = parseFloat(row.querySelector('.amount').value) || 0;
+            total += amount;
+        });
+
+        total = Math.round(total * 100) / 100;
+
+        document.getElementById('sumAmount').innerText = total > 0 ? total : '';
+        document.getElementById('grandTotal').innerText = total > 0 ? total : '';
+        document.getElementById('amountInWords').innerText = total > 0 ? numberToWords(total) + " Rupees Only" : "";
+    }
+
+    // Number to words converter
+    function numberToWords(num) {
+        const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+        const b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+
+        if ((num = num.toString()).length > 9) return 'overflow';
+        let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+        if (!n) return; let str = '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+        str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+        return str.trim();
+    }
+
+    function renderInitial() {
+        for(let i=1; i<=35; i++) {
+            tbody.appendChild(createRow(i));
+        }
+        calculate();
+    }
+
+    renderInitial();
+</script>
+</body>
+</html>
