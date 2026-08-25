@@ -213,10 +213,11 @@
             <td colspan="3" style="font-weight: bold; font-size: var(--font-md);">
                 GSTIN NO. : <span contenteditable="true" class="editable">24AESPB6082M1Z3</span>
             </td>
-            <td colspan="2" style="font-weight: bold; font-size: var(--font-md); padding: var(--pad-sm) var(--pad-md);">
+            <td style="font-weight: bold; font-size: var(--font-md); padding: var(--pad-sm) var(--pad-md);">
                 <span style="float: left;">PAN NO. AEX</span>
                 <span style="float: right;">Sub Total</span>
             </td>
+            <td style="font-weight: bold; text-align: center; font-size: var(--font-lg);" id="sumTrips"></td>
             <td style="font-weight: bold; text-align: right; font-size: var(--font-lg);" id="sumKm"></td>
             <td class="no-print"></td>
         </tr>
@@ -293,7 +294,7 @@
             <td><input type="text" class="annex" value="${data[1] || ''}" oninput="syncAnnex(this)"></td>
             <td><input type="text" class="sac" value="${data[2] || ''}" onfocus="storeOldSac(this)" oninput="syncSac(this)"></td>
             <td><input type="text" value="${data[3] || ''}"></td>
-            <td><input type="text" class="trips" value="${data[4] || ''}"></td>
+            <td><input type="text" class="trips" value="${data[4] || ''}" oninput="calculate()"></td>
             <td><input type="number" class="km" value="${data[5] || ''}" oninput="calculate()"></td>
             <td class="no-print" style="text-align:center;"><button class="remove-btn" onclick="removeRow(this)">X</button></td>
         `;
@@ -406,15 +407,20 @@
 
     function calculate() {
         let kmTotal = 0;
+        let tripsTotal = 0;
 
         document.querySelectorAll('#tableBody tr').forEach(row => {
             let km = parseFloat(row.querySelector('.km').value) || 0;
             kmTotal += km;
+
+            let trips = parseFloat(row.querySelector('.trips').value) || 0;
+            tripsTotal += trips;
         });
 
         kmTotal = Math.round(kmTotal * 100) / 100;
 
         document.getElementById('sumKm').innerText = kmTotal > 0 ? kmTotal.toFixed(2) : '';
+        document.getElementById('sumTrips').innerText = tripsTotal > 0 ? tripsTotal : '';
         document.getElementById('taxableAmount').innerText = kmTotal > 0 ? kmTotal.toFixed(2) : '';
 
         let cgst = kmTotal * 0.09;
